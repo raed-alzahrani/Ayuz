@@ -243,6 +243,10 @@ pub struct AppConfig {
     pub fan_osd_enabled: bool,
     #[serde(default = "default_true")]
     pub fan_hotkey_enabled: bool,
+    #[serde(default)]
+    pub fn_osd_enabled: bool,
+    #[serde(default)]
+    pub fn_osd_inverted: bool,
 
     // ── Profile management ───────────────────────────────────────────────────
     #[serde(default)]
@@ -258,6 +262,8 @@ impl Default for AppConfig {
             skip_legacy_migration: false,
             fan_osd_enabled: true,
             fan_hotkey_enabled: true,
+            fn_osd_enabled: false,
+            fn_osd_inverted: false,
             active_profile_id: String::new(),
             profiles: vec![],
         }

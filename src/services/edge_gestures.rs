@@ -182,11 +182,8 @@ pub async fn run_gesture_loop(mut shutdown: watch::Receiver<bool>) {
                             let dy = value - *last_y;
                             if dy.abs() >= STEP_THRESHOLD {
                                 *last_y = value;
-                                run_action(
-                                    "pactl",
-                                    &["set-sink-mute", "@DEFAULT_SINK@", "0"],
-                                )
-                                .await;
+                                run_action("pactl", &["set-sink-mute", "@DEFAULT_SINK@", "0"])
+                                    .await;
                                 if dy < 0 {
                                     run_action(
                                         "pactl",
@@ -226,11 +223,7 @@ pub async fn run_gesture_loop(mut shutdown: watch::Receiver<bool>) {
                     }
                 }
             }
-            EventSummary::Key(
-                _,
-                KeyCode::BTN_TOOL_DOUBLETAP | KeyCode::BTN_TOOL_TRIPLETAP,
-                1,
-            ) => {
+            EventSummary::Key(_, KeyCode::BTN_TOOL_DOUBLETAP | KeyCode::BTN_TOOL_TRIPLETAP, 1) => {
                 state = GestureState::Other;
             }
             EventSummary::AbsoluteAxis(_, AbsoluteAxisCode::ABS_MT_SLOT, value) if value > 0 => {

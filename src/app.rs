@@ -17,45 +17,45 @@
 use std::os::unix::process::CommandExt;
 use std::process::Command;
 
+use crate::components::animatrix::{AnimatrixModel, AnimatrixMsg};
+use crate::components::audio::volume::VolumeMsg;
 use crate::components::audio::{SoundModesModel, SoundModesMsg, VolumeModel};
+use crate::components::aura::AuraPageModel;
+use crate::components::aura::AuraPageMsg;
 use crate::components::display::ColorGamutModel;
 use crate::components::display::OledCareModel;
 use crate::components::display::OledDimmingModel;
 use crate::components::display::TargetModeModel;
-use crate::components::home::{HomeModel, HomeOutput};
-use crate::components::audio::volume::VolumeMsg;
 use crate::components::display::color_gamut::ColorGamutMsg;
 use crate::components::display::oled_care::OledCareMsg;
 use crate::components::display::oled_dimming::OledDimmingMsg;
 use crate::components::display::target_mode::TargetModeMsg;
+use crate::components::home::{HomeModel, HomeOutput};
+use crate::components::keyboard::AutoBacklightModel;
+use crate::components::keyboard::BacklightIdleModel;
+use crate::components::keyboard::FnKeyModel;
 use crate::components::keyboard::auto_backlight::AutoBacklightMsg;
 use crate::components::keyboard::auto_backlight::AutoBacklightOutput;
 use crate::components::keyboard::backlight_idle::BacklightIdleMsg;
 use crate::components::keyboard::fn_key::FnKeyMsg;
-use crate::components::touchpad::gestures::GesturesMsg;
-use crate::components::touchpad::numberpad::NumberpadMsg;
-use crate::components::touchpad::touchpad::TouchpadMsg;
-use crate::components::touchpad::typing::TypingMsg;
+use crate::components::system::apu_mem::ApuMemModel;
 use crate::components::system::apu_mem::ApuMemMsg;
+use crate::components::system::battery::BatteryModel;
 use crate::components::system::battery::BatteryMsg;
+use crate::components::system::fan::FanModel;
 use crate::components::system::fan::FanMsg;
+use crate::components::system::gpu::GpuModel;
 use crate::components::system::gpu::GpuMsg;
-use crate::services::dbus::FanProfile;
-use crate::components::animatrix::{AnimatrixModel, AnimatrixMsg};
-use crate::components::aura::AuraPageModel;
-use crate::components::aura::AuraPageMsg;
-use crate::components::keyboard::AutoBacklightModel;
-use crate::components::keyboard::BacklightIdleModel;
-use crate::components::keyboard::FnKeyModel;
 use crate::components::touchpad::GesturesModel;
 use crate::components::touchpad::NumberpadModel;
 use crate::components::touchpad::TouchpadModel;
 use crate::components::touchpad::TypingModel;
-use crate::components::system::apu_mem::ApuMemModel;
-use crate::components::system::battery::BatteryModel;
-use crate::components::system::fan::FanModel;
-use crate::components::system::gpu::GpuModel;
+use crate::components::touchpad::gestures::GesturesMsg;
+use crate::components::touchpad::numberpad::NumberpadMsg;
+use crate::components::touchpad::touchpad::TouchpadMsg;
+use crate::components::touchpad::typing::TypingMsg;
 use crate::search::sorted_nav_items;
+use crate::services::dbus::FanProfile;
 use crate::tray;
 use relm4::adw;
 use relm4::adw::prelude::*;
@@ -160,10 +160,18 @@ impl AppModel {
     /// `profile`. Grouped per page so the call sites stay readable.
     fn distribute_profile(&self, p: &crate::services::config::Profile) {
         // Display
-        self.fan.sender().emit(FanMsg::LoadProfile(FanProfile::from(p.fan_profile)));
-        self.oled_dimming.sender().emit(OledDimmingMsg::LoadProfile(p.oled_dc_dimming));
-        self.target_mode.sender().emit(TargetModeMsg::LoadProfile(p.target_mode_active));
-        self.color_gamut.sender().emit(ColorGamutMsg::LoadProfile(p.color_profile_index));
+        self.fan
+            .sender()
+            .emit(FanMsg::LoadProfile(FanProfile::from(p.fan_profile)));
+        self.oled_dimming
+            .sender()
+            .emit(OledDimmingMsg::LoadProfile(p.oled_dc_dimming));
+        self.target_mode
+            .sender()
+            .emit(TargetModeMsg::LoadProfile(p.target_mode_active));
+        self.color_gamut
+            .sender()
+            .emit(ColorGamutMsg::LoadProfile(p.color_profile_index));
         self.oled_care.sender().emit(OledCareMsg::LoadProfile {
             pixel_refresh: p.oled_care_pixel_refresh,
             panel_autohide: p.oled_care_panel_autohide,
@@ -171,21 +179,29 @@ impl AppModel {
         });
 
         // Audio
-        self.sound_modes.sender().emit(SoundModesMsg::LoadProfile(p.audio_profile));
-        self.volume_widget.sender().emit(VolumeMsg::LoadProfile(p.volume));
+        self.sound_modes
+            .sender()
+            .emit(SoundModesMsg::LoadProfile(p.audio_profile));
+        self.volume_widget
+            .sender()
+            .emit(VolumeMsg::LoadProfile(p.volume));
 
         // Keyboard & input
-        self.auto_backlight.sender().emit(AutoBacklightMsg::LoadProfile {
-            brighten: p.kbd_brighten_active,
-            dim: p.kbd_dim_active,
-            brighten_threshold: p.kbd_brighten_threshold,
-            dim_threshold: p.kbd_dim_threshold,
-        });
-        self.backlight_idle.sender().emit(BacklightIdleMsg::LoadProfile {
-            mode: p.kbd_timeout_mode,
-            ac_index: p.kbd_timeout_battery_ac_index,
-            battery_index: p.kbd_timeout_battery_only_index,
-        });
+        self.auto_backlight
+            .sender()
+            .emit(AutoBacklightMsg::LoadProfile {
+                brighten: p.kbd_brighten_active,
+                dim: p.kbd_dim_active,
+                brighten_threshold: p.kbd_brighten_threshold,
+                dim_threshold: p.kbd_dim_threshold,
+            });
+        self.backlight_idle
+            .sender()
+            .emit(BacklightIdleMsg::LoadProfile {
+                mode: p.kbd_timeout_mode,
+                ac_index: p.kbd_timeout_battery_ac_index,
+                battery_index: p.kbd_timeout_battery_only_index,
+            });
         self.aura.sender().emit(AuraPageMsg::LoadProfile {
             mode: p.aura_mode,
             zone: p.aura_zone,
@@ -211,20 +227,32 @@ impl AppModel {
             off_suspended: p.animatrix_off_when_suspended,
             off_lid_closed: p.animatrix_off_when_lid_closed,
         });
-        self.touchpad.sender().emit(TouchpadMsg::LoadProfile(p.touchpad_active));
-        self.gestures.sender().emit(GesturesMsg::LoadProfile(p.input_gestures_active));
-        self.numberpad.sender().emit(NumberpadMsg::LoadProfile(p.numberpad_active));
+        self.touchpad
+            .sender()
+            .emit(TouchpadMsg::LoadProfile(p.touchpad_active));
+        self.gestures
+            .sender()
+            .emit(GesturesMsg::LoadProfile(p.input_gestures_active));
+        self.numberpad
+            .sender()
+            .emit(NumberpadMsg::LoadProfile(p.numberpad_active));
         self.typing.sender().emit(TypingMsg::LoadProfile {
             disable_gestures: p.typing_disable_gestures,
             disable_touchpad: p.typing_disable_touchpad,
             delay_ms: p.typing_reactivation_delay_ms,
         });
-        self.fn_key.sender().emit(FnKeyMsg::LoadProfile(p.input_fn_key_locked));
+        self.fn_key
+            .sender()
+            .emit(FnKeyMsg::LoadProfile(p.input_fn_key_locked));
 
         // System
-        self.battery.sender().emit(BatteryMsg::LoadProfile(p.battery_deep_sleep_active));
+        self.battery
+            .sender()
+            .emit(BatteryMsg::LoadProfile(p.battery_deep_sleep_active));
         self.gpu.sender().emit(GpuMsg::LoadProfile(p.gpu_mode));
-        self.apu_mem.sender().emit(ApuMemMsg::LoadProfile(p.apu_mem));
+        self.apu_mem
+            .sender()
+            .emit(ApuMemMsg::LoadProfile(p.apu_mem));
     }
 }
 
@@ -302,7 +330,9 @@ impl SimpleComponent for AppModel {
                 });
             }
             AppMsg::AmbientBacklightChanged => {
-                self.backlight_idle.sender().emit(BacklightIdleMsg::AmbientChanged);
+                self.backlight_idle
+                    .sender()
+                    .emit(BacklightIdleMsg::AmbientChanged);
             }
             AppMsg::TriggerManualMigration => {
                 if !crate::services::migration::legacy_dir_exists() {
@@ -319,9 +349,7 @@ impl SimpleComponent for AppModel {
                     dialog.add_response("yes", &t!("migration_dialog_yes"));
                     dialog.set_default_response(Some("yes"));
                     dialog.set_close_response("no");
-                    let response = dialog
-                        .choose_future(window_weak.upgrade().as_ref())
-                        .await;
+                    let response = dialog.choose_future(window_weak.upgrade().as_ref()).await;
                     if &*response == "yes" {
                         migration_sender.emit(AppMsg::LegacyMigrationAccepted);
                     } else {
@@ -337,12 +365,13 @@ impl SimpleComponent for AppModel {
         root: Self::Root,
         sender: ComponentSender<Self>,
     ) -> ComponentParts<Self> {
-        let home = HomeModel::builder()
-            .launch(())
-            .forward(sender.input_sender(), |msg| match msg {
-                HomeOutput::Error(e) => AppMsg::Error(e),
-                HomeOutput::ActivateProfile(id) => AppMsg::ActivateProfile(id),
-            });
+        let home =
+            HomeModel::builder()
+                .launch(())
+                .forward(sender.input_sender(), |msg| match msg {
+                    HomeOutput::Error(e) => AppMsg::Error(e),
+                    HomeOutput::ActivateProfile(id) => AppMsg::ActivateProfile(id),
+                });
         let apu_mem = launch_component!(ApuMemModel, sender);
         let battery = launch_component!(BatteryModel, sender);
         let fan = launch_component!(FanModel, sender);
@@ -358,12 +387,13 @@ impl SimpleComponent for AppModel {
         let numberpad = launch_component!(NumberpadModel, sender);
         let touchpad = launch_component!(TouchpadModel, sender);
         let typing = launch_component!(TypingModel, sender);
-        let auto_backlight = AutoBacklightModel::builder()
-            .launch(())
-            .forward(sender.input_sender(), |msg| match msg {
+        let auto_backlight = AutoBacklightModel::builder().launch(()).forward(
+            sender.input_sender(),
+            |msg| match msg {
                 AutoBacklightOutput::Error(e) => AppMsg::Error(e),
                 AutoBacklightOutput::AmbientChanged => AppMsg::AmbientBacklightChanged,
-            });
+            },
+        );
         let backlight_idle = launch_component!(BacklightIdleModel, sender);
         let sound_modes = launch_component!(SoundModesModel, sender);
         let volume_widget = launch_component!(VolumeModel, sender);
@@ -380,7 +410,7 @@ impl SimpleComponent for AppModel {
         let (fan_hotkey_tx, fan_hotkey_rx) =
             tokio::sync::watch::channel(initial_fan_hotkey_enabled);
         tokio::spawn(crate::services::fan_hotkey::run(fan_sender, fan_hotkey_rx));
-
+        crate::services::fnlock_listener::start();
         // Abstract Unix socket listener for `ayuz --toggle-numberpad`. The
         // CLI short-circuit in main.rs connects to "\0ayuz-numberpad" and
         // writes one byte; each byte received here flips the NumberPad
@@ -394,7 +424,10 @@ impl SimpleComponent for AppModel {
                 None => return,
             };
             let listener = match std::os::unix::net::UnixListener::bind_addr(&addr)
-                .and_then(|s| { s.set_nonblocking(true)?; Ok(s) })
+                .and_then(|s| {
+                    s.set_nonblocking(true)?;
+                    Ok(s)
+                })
                 .and_then(UnixListener::from_std)
             {
                 Ok(l) => l,
@@ -553,7 +586,10 @@ impl SimpleComponent for AppModel {
                 color_gamut_widget.clone().upcast::<gtk4::Widget>(),
             ),
             ("aura", aura_widget.clone().upcast::<gtk4::Widget>()),
-            ("animatrix", animatrix_widget.clone().upcast::<gtk4::Widget>()),
+            (
+                "animatrix",
+                animatrix_widget.clone().upcast::<gtk4::Widget>(),
+            ),
             (
                 "auto_backlight",
                 auto_backlight_widget.clone().upcast::<gtk4::Widget>(),
@@ -564,7 +600,10 @@ impl SimpleComponent for AppModel {
             ),
             ("fn_key", fn_key_widget.clone().upcast::<gtk4::Widget>()),
             ("gestures", gestures_widget.clone().upcast::<gtk4::Widget>()),
-            ("numberpad", numberpad_widget.clone().upcast::<gtk4::Widget>()),
+            (
+                "numberpad",
+                numberpad_widget.clone().upcast::<gtk4::Widget>(),
+            ),
             ("touchpad", touchpad_widget.clone().upcast::<gtk4::Widget>()),
             ("typing", typing_widget.clone().upcast::<gtk4::Widget>()),
             ("volume", volume_widget.clone().upcast::<gtk4::Widget>()),
@@ -763,9 +802,7 @@ impl SimpleComponent for AppModel {
                 dialog.add_response("yes", &t!("migration_dialog_yes"));
                 dialog.set_default_response(Some("yes"));
                 dialog.set_close_response("no");
-                let response = dialog
-                    .choose_future(window_weak.upgrade().as_ref())
-                    .await;
+                let response = dialog.choose_future(window_weak.upgrade().as_ref()).await;
                 if &*response == "yes" {
                     migration_sender.emit(AppMsg::LegacyMigrationAccepted);
                 } else {
@@ -827,9 +864,7 @@ fn build_asus_key_hint_group(
 }
 
 /// "App settings" group on the system page: language dropdown + autostart switch.
-fn build_language_and_autostart_group(
-    sender: &ComponentSender<AppModel>,
-) -> adw::PreferencesGroup {
+fn build_language_and_autostart_group(sender: &ComponentSender<AppModel>) -> adw::PreferencesGroup {
     const SUPPORTED_LANGS: &[(&str, &str)] = &[
         ("English", "en"),
         ("Deutsch", "de"),

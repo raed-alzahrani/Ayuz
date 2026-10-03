@@ -228,9 +228,14 @@ impl Component for GpuModel {
                 self.display_modes = modes;
                 self.current_mode = current;
 
-                let translated: Vec<String> = self.display_modes.iter().map(|m| t!(m.i18n_key()).to_string()).collect();
+                let translated: Vec<String> = self
+                    .display_modes
+                    .iter()
+                    .map(|m| t!(m.i18n_key()).to_string())
+                    .collect();
                 let str_refs: Vec<&str> = translated.iter().map(|s| s.as_str()).collect();
-                self.combo_row.set_model(Some(&gtk::StringList::new(&str_refs)));
+                self.combo_row
+                    .set_model(Some(&gtk::StringList::new(&str_refs)));
 
                 let selected_idx = self
                     .display_modes

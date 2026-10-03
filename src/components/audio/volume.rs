@@ -180,7 +180,7 @@ async fn start_volume_listener(sender: relm4::ComponentSender<VolumeModel>) {
     use tokio::io::{AsyncBufReadExt, BufReader};
     use tokio::process::Command;
     use tokio::sync::mpsc;
-    use tokio::time::{sleep, Duration};
+    use tokio::time::{Duration, sleep};
 
     let mut child = match Command::new("pactl")
         .arg("subscribe")
@@ -195,7 +195,7 @@ async fn start_volume_listener(sender: relm4::ComponentSender<VolumeModel>) {
         None => return,
     };
 
-    // Capacity 1: extra try_send calls during a burst are silently dropped 
+    // Capacity 1: extra try_send calls during a burst are silently dropped
     let (tx, mut rx) = mpsc::channel::<()>(1);
 
     tokio::spawn(async move {

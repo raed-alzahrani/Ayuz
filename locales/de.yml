@@ -405,3 +405,11 @@ fan_osd_enabled_subtitle: "Kurze Bildschirmanzeige einblenden, wenn das Lüfterp
 fan_hotkey_listening: "FN+F Lüftertasten-Listener aktiv auf \"%{device}\""
 error_fan_hotkey_no_device: "Kein ASUS-Hotkey-Eingabegerät gefunden; FN+F-Lüfter-Tastenkürzel deaktiviert."
 error_typing_no_keyboard: "Kein Tastatur-Eingabegerät gefunden; Deaktivieren beim Schreiben ist nicht verfügbar."
+# fn_osd & listener
+fn_osd_switch_title: "Fn-Sperre OSD aktivieren"
+fn_osd_switch_subtitle: "Bildschirmanzeige einblenden, wenn die Fn-Sperrtaste gedrückt wird"
+fn_osd_invert_title: "OSD kalibrieren / umkehren"
+fn_osd_invert_subtitle: "Klicken, um den Zustand umzukehren, falls Medien- und F-Tasten vertauscht sind"
+fn_osd_invert_btn_tooltip: "Ausgangszustand umschalten"
+fn_osd_fkeys_label: "Fn-Sperre: Standard F1–F12"
+fn_osd_media_label: "Fn-Sperre: Medien / Sondertasten"

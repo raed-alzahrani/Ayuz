@@ -216,8 +216,10 @@ impl Component for FanModel {
                 self.current_profile = target;
                 AppConfig::update(|c| c.active_profile_mut().fan_profile = target as u32);
 
-                self.check_performance.set_active(target == FanProfile::Performance);
-                self.check_balanced.set_active(target == FanProfile::Balanced);
+                self.check_performance
+                    .set_active(target == FanProfile::Performance);
+                self.check_balanced
+                    .set_active(target == FanProfile::Balanced);
                 self.check_quiet
                     .set_active(target == FanProfile::Quiet || target == FanProfile::LowPower);
 
@@ -237,8 +239,10 @@ impl Component for FanModel {
                     return;
                 }
                 self.current_profile = profile;
-                self.check_performance.set_active(profile == FanProfile::Performance);
-                self.check_balanced.set_active(profile == FanProfile::Balanced);
+                self.check_performance
+                    .set_active(profile == FanProfile::Performance);
+                self.check_balanced
+                    .set_active(profile == FanProfile::Balanced);
                 self.check_quiet
                     .set_active(profile == FanProfile::Quiet || profile == FanProfile::LowPower);
 
@@ -268,8 +272,10 @@ impl Component for FanModel {
             }
             FanCommandOutput::InitialProfile(profile) => {
                 self.current_profile = profile;
-                self.check_performance.set_active(profile == FanProfile::Performance);
-                self.check_balanced.set_active(profile == FanProfile::Balanced);
+                self.check_performance
+                    .set_active(profile == FanProfile::Performance);
+                self.check_balanced
+                    .set_active(profile == FanProfile::Balanced);
                 self.check_quiet
                     .set_active(profile == FanProfile::Quiet || profile == FanProfile::LowPower);
             }

@@ -21,9 +21,9 @@ use relm4::prelude::*;
 use rust_i18n::t;
 
 use crate::services::commands::pkexec_write_sysfs;
-use crate::sys_paths::SYS_MEM_SLEEP;
 use crate::services::config::AppConfig;
 use crate::services::dbus;
+use crate::sys_paths::SYS_MEM_SLEEP;
 
 /// State for the battery settings component.
 pub struct BatteryModel {

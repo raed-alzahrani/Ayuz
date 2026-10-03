@@ -405,3 +405,11 @@ fan_osd_enabled_subtitle: "Display a brief on-screen indicator whenever the fan 
 fan_hotkey_listening: 'FN+F fan-key listener active on "%{device}"'
 error_fan_hotkey_no_device: "No ASUS hotkey input device found; FN+F fan-mode shortcut disabled."
 error_typing_no_keyboard: "No keyboard input device found; disabling input while typing is unavailable."
+# fn_osd & listener
+fn_osd_switch_title: "Enable Fn-Lock OSD"
+fn_osd_switch_subtitle: "Show on-screen display overlay when Fn-Lock key is pressed"
+fn_osd_invert_title: "Calibrate / Invert OSD"
+fn_osd_invert_subtitle: "Click to sync and flip the state if Media and F1-F12 appear reversed"
+fn_osd_invert_btn_tooltip: "Toggle initial state"
+fn_osd_fkeys_label: "Fn Lock: Standard F1–F12"
+fn_osd_media_label: "Fn Lock: Media / Hotkeys"

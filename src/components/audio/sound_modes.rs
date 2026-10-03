@@ -140,8 +140,7 @@ impl Component for SoundModesModel {
         sender.command(move |out, shutdown| {
             shutdown
                 .register(async move {
-                    let installed =
-                        crate::services::commands::which_exists("easyeffects").await;
+                    let installed = crate::services::commands::which_exists("easyeffects").await;
                     out.emit(AudioCommandOutput::EeChecked(installed));
                 })
                 .drop_on_shutdown()
@@ -190,7 +189,8 @@ impl Component for SoundModesModel {
                         match dialog.open_future(None::<&gtk::Window>).await {
                             Ok(file) => {
                                 if let Some(path) = file.path() {
-                                    sender_clone.input(SoundModesMsg::CustomPresetPathSelected(path));
+                                    sender_clone
+                                        .input(SoundModesMsg::CustomPresetPathSelected(path));
                                 } else {
                                     sender_clone.input(SoundModesMsg::CustomCancelled(previous));
                                 }

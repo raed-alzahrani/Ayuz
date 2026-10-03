@@ -187,8 +187,7 @@ impl Component for OledCareModel {
 
                 if is_kde_desktop() {
                     let hiding = if active { "autohide" } else { "none" };
-                    let script =
-                        format!("panels().forEach(function(p){{p.hiding='{}';}})", hiding);
+                    let script = format!("panels().forEach(function(p){{p.hiding='{}';}})", hiding);
                     sender.command(move |out, shutdown| {
                         shutdown
                             .register(async move {

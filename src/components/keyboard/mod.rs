@@ -17,6 +17,7 @@
 pub mod auto_backlight;
 pub mod backlight_idle;
 pub mod fn_key;
+pub mod fn_osd;
 
 pub use auto_backlight::AutoBacklightModel;
 pub use backlight_idle::BacklightIdleModel;

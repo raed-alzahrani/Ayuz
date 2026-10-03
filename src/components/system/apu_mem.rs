@@ -126,7 +126,9 @@ impl Component for ApuMemModel {
 
         // Set a placeholder model so the ComboRow always renders,
         // even before the daemon responds or when it is unavailable.
-        combo_row.set_model(Some(&gtk::StringList::new(&[&label_for_value(saved_value)])));
+        combo_row.set_model(Some(&gtk::StringList::new(&[&label_for_value(
+            saved_value,
+        )])));
 
         let model = ApuMemModel {
             available: false,
@@ -224,10 +226,14 @@ impl Component for ApuMemModel {
                 self.display_options = options;
                 self.current_value = current;
 
-                let translated: Vec<String> =
-                    self.display_options.iter().map(|&v| label_for_value(v)).collect();
+                let translated: Vec<String> = self
+                    .display_options
+                    .iter()
+                    .map(|&v| label_for_value(v))
+                    .collect();
                 let str_refs: Vec<&str> = translated.iter().map(|s| s.as_str()).collect();
-                self.combo_row.set_model(Some(&gtk::StringList::new(&str_refs)));
+                self.combo_row
+                    .set_model(Some(&gtk::StringList::new(&str_refs)));
 
                 let idx = self
                     .display_options

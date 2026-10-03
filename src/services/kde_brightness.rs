@@ -37,7 +37,9 @@ pub trait BrightnessControl {
 /// Returns Err if D-Bus is unreachable / PowerDevil is missing; callers should fall back to
 /// brightnessctl.
 pub async fn adjust_brightness_relative(delta_percent: i32) -> Result<(), String> {
-    let conn = zbus::Connection::session().await.map_err(|e| e.to_string())?;
+    let conn = zbus::Connection::session()
+        .await
+        .map_err(|e| e.to_string())?;
     let proxy = BrightnessControlProxy::new(&conn)
         .await
         .map_err(|e| e.to_string())?;

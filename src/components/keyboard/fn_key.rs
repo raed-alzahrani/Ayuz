@@ -31,6 +31,8 @@ pub struct FnKeyModel {
     row_hint: adw::ActionRow,
     row_locked: adw::ActionRow,
     row_normal: adw::ActionRow,
+    row_osd_switch: adw::SwitchRow,
+    row_osd_invert: adw::ActionRow,
 }
 
 #[derive(Debug)]
@@ -64,10 +66,11 @@ impl Component for FnKeyModel {
                 set_visible: !model.grubby_available,
                 set_label: &t!("fn_key_grubby_missing_warning"),
             },
-
             add = &model.row_hint.clone(),
             add = &model.row_locked.clone(),
             add = &model.row_normal.clone(),
+            add = &model.row_osd_switch.clone(),
+            add = &model.row_osd_invert.clone(),
         }
     }
 
@@ -122,6 +125,34 @@ impl Component for FnKeyModel {
         row_normal.add_prefix(&check_normal);
         row_normal.set_activatable_widget(Some(&check_normal));
 
+        let cfg = AppConfig::load();
+
+        let row_osd_switch = adw::SwitchRow::new();
+        row_osd_switch.set_title(&t!("fn_osd_switch_title"));
+        row_osd_switch.set_subtitle(&t!("fn_osd_switch_subtitle"));
+        row_osd_switch.set_active(cfg.fn_osd_enabled);
+        row_osd_switch.connect_active_notify(|row| {
+            let active = row.is_active();
+            AppConfig::update(|c| c.fn_osd_enabled = active);
+        });
+
+        let row_osd_invert = adw::ActionRow::new();
+        row_osd_invert.set_title(&t!("fn_osd_invert_title"));
+        row_osd_invert.set_subtitle(&t!("fn_osd_invert_subtitle"));
+        let sync_btn = gtk::Button::builder()
+            .icon_name("view-refresh-symbolic")
+            .valign(gtk::Align::Center)
+            .css_classes(["flat"])
+            .tooltip_text(&t!("fn_osd_invert_btn_tooltip"))
+            .build();
+        sync_btn.connect_clicked(|_| {
+            let inverted = AppConfig::load().fn_osd_inverted;
+            AppConfig::update(|c| c.fn_osd_inverted = !inverted);
+            crate::components::keyboard::fn_osd::show(false);
+        });
+        row_osd_invert.add_suffix(&sync_btn);
+        row_osd_invert.set_activatable_widget(Some(&sync_btn));
+
         let model = FnKeyModel {
             locked,
             grubby_available: false,
@@ -130,6 +161,8 @@ impl Component for FnKeyModel {
             row_hint,
             row_locked,
             row_normal,
+            row_osd_switch,
+            row_osd_invert,
         };
 
         let widgets = view_output!();
@@ -153,10 +186,9 @@ impl Component for FnKeyModel {
                 self.check_locked.set_active(locked);
                 self.check_normal.set_active(!locked);
 
-                let args_flag = format!(
-                    "--args=asus_wmi.fnlock_default={}",
-                    if locked { "0" } else { "1" }
-                );
+                let val = if locked { "0" } else { "1" };
+                let args_flag = format!("--args=asus_wmi.fnlock_default={}", val);
+
                 sender.command(move |out, shutdown| {
                     shutdown
                         .register(async move {
@@ -170,6 +202,7 @@ impl Component for FnKeyModel {
                                 ],
                             )
                             .await;
+
                             match result {
                                 Ok(()) => out.emit(FnKeyCommandOutput::Set(locked)),
                                 Err(e) => out.emit(FnKeyCommandOutput::Error(e)),
@@ -184,10 +217,8 @@ impl Component for FnKeyModel {
                 }
                 self.locked = locked;
 
-                let args_flag = format!(
-                    "--args=asus_wmi.fnlock_default={}",
-                    if locked { "0" } else { "1" }
-                );
+                let val = if locked { "0" } else { "1" };
+                let args_flag = format!("--args=asus_wmi.fnlock_default={}", val);
 
                 sender.command(move |out, shutdown| {
                     shutdown

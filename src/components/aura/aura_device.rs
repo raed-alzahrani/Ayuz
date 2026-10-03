@@ -81,7 +81,13 @@ pub struct AuraDeviceModel {
     speed_row: adw::ComboRow,
     direction_row: adw::ComboRow,
     power_expander: adw::ExpanderRow,
-    power_switches: Vec<(PowerZones, gtk::Switch, gtk::Switch, gtk::Switch, gtk::Switch)>,
+    power_switches: Vec<(
+        PowerZones,
+        gtk::Switch,
+        gtk::Switch,
+        gtk::Switch,
+        gtk::Switch,
+    )>,
 }
 
 #[derive(Debug)]
@@ -226,7 +232,8 @@ impl Component for AuraDeviceModel {
         });
 
         let brightness_combo = adw::ComboRow::new();
-        let bright_labels: Vec<String> = BRIGHTNESS_KEYS.iter().map(|k| t!(*k).to_string()).collect();
+        let bright_labels: Vec<String> =
+            BRIGHTNESS_KEYS.iter().map(|k| t!(*k).to_string()).collect();
         let bright_refs: Vec<&str> = bright_labels.iter().map(|s| s.as_str()).collect();
         brightness_combo.set_model(Some(&gtk::StringList::new(&bright_refs)));
         brightness_combo.connect_selected_notify({
@@ -587,7 +594,8 @@ impl AuraDeviceModel {
             .map(|m| t!(m.i18n_key()).to_string())
             .collect();
         let refs: Vec<&str> = labels.iter().map(|s| s.as_str()).collect();
-        self.mode_combo.set_model(Some(&gtk::StringList::new(&refs)));
+        self.mode_combo
+            .set_model(Some(&gtk::StringList::new(&refs)));
         self.sync_mode_widget();
     }
 
@@ -623,8 +631,10 @@ impl AuraDeviceModel {
     }
 
     fn sync_colour_widgets(&self) {
-        self.colour1_button.set_rgba(&colour_to_rgba(self.current_colour1));
-        self.colour2_button.set_rgba(&colour_to_rgba(self.current_colour2));
+        self.colour1_button
+            .set_rgba(&colour_to_rgba(self.current_colour1));
+        self.colour2_button
+            .set_rgba(&colour_to_rgba(self.current_colour2));
     }
 
     fn sync_speed_direction_widgets(&self) {
@@ -696,11 +706,24 @@ impl AuraDeviceModel {
                 (cell, sw)
             };
 
-            let (cb, sw_boot) = make_switch("aura_power_boot", state.boot, PowerField::Boot, sender.clone());
-            let (ca, sw_awake) =
-                make_switch("aura_power_awake", state.awake, PowerField::Awake, sender.clone());
-            let (cs, sw_sleep) =
-                make_switch("aura_power_sleep", state.sleep, PowerField::Sleep, sender.clone());
+            let (cb, sw_boot) = make_switch(
+                "aura_power_boot",
+                state.boot,
+                PowerField::Boot,
+                sender.clone(),
+            );
+            let (ca, sw_awake) = make_switch(
+                "aura_power_awake",
+                state.awake,
+                PowerField::Awake,
+                sender.clone(),
+            );
+            let (cs, sw_sleep) = make_switch(
+                "aura_power_sleep",
+                state.sleep,
+                PowerField::Sleep,
+                sender.clone(),
+            );
             let (csh, sw_shut) = make_switch(
                 "aura_power_shutdown",
                 state.shutdown,

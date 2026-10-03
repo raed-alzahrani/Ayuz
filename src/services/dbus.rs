@@ -36,19 +36,15 @@ pub(crate) const AURA_INTERFACE: &str = "xyz.ljones.Aura";
 // the macro so sibling modules (e.g. `dbus_animatrix.rs`) can call it.
 macro_rules! proxy_singleton {
     ($cell:ident, $accessor:ident, $proxy:ident) => {
-        static $cell: tokio::sync::OnceCell<$proxy<'static>> =
-            tokio::sync::OnceCell::const_new();
+        static $cell: tokio::sync::OnceCell<$proxy<'static>> = tokio::sync::OnceCell::const_new();
 
         async fn $accessor() -> Result<&'static $proxy<'static>, String> {
             $cell
                 .get_or_try_init(|| async {
                     let conn = $crate::services::dbus::system_bus_connection().await?;
-                    $proxy::new(&conn)
-                        .await
-                        .map_err(|e| {
-                            rust_i18n::t!("error_dbus_proxy_create", error = e.to_string())
-                                .to_string()
-                        })
+                    $proxy::new(&conn).await.map_err(|e| {
+                        rust_i18n::t!("error_dbus_proxy_create", error = e.to_string()).to_string()
+                    })
                 })
                 .await
         }
@@ -338,8 +334,8 @@ pub async fn get_apu_mem_options() -> Result<Vec<i32>, String> {
 
 // ── Aura RGB keyboard lighting ───────────────────────────────────────────────
 
-use std::collections::BTreeMap;
 use serde::{Deserialize, Serialize};
+use std::collections::BTreeMap;
 use zbus::zvariant::{ObjectPath, OwnedObjectPath, OwnedValue, Type, Value};
 
 /// `AuraDeviceType` discriminants exposed by `xyz.ljones.Aura.device_type`.
@@ -579,10 +575,7 @@ pub struct AuraEffect {
     pub direction: String,
 }
 
-#[zbus::proxy(
-    interface = "xyz.ljones.Aura",
-    default_service = "xyz.ljones.Asusd"
-)]
+#[zbus::proxy(interface = "xyz.ljones.Aura", default_service = "xyz.ljones.Asusd")]
 trait Aura {
     #[zbus(property)]
     fn device_type(&self) -> zbus::Result<u32>;

@@ -18,7 +18,7 @@ use rust_i18n::t;
 use serde::{Deserialize, Serialize};
 use zbus::zvariant::{OwnedValue, Type, Value};
 
-use super::dbus::{proxy_singleton, ASUSD_SERVICE};
+use super::dbus::{ASUSD_SERVICE, proxy_singleton};
 
 /// AniMatrix D-Bus interface name. Mirrors the literal used in the
 /// `#[zbus::proxy(interface = ...)]` attribute below.
@@ -51,7 +51,6 @@ impl AnimatrixHardwareType {
             Self::Unsupported => "Unsupported",
         }
     }
-
 }
 
 /// Reads `/sys/class/dmi/id/board_name` and returns the AniMatrix hardware

@@ -405,3 +405,11 @@ fan_osd_enabled_subtitle: "Exibir um indicador rápido na tela sempre que o perf
 fan_hotkey_listening: "Listener FN+F da tecla de ventoinha ativo em \"%{device}\""
 error_fan_hotkey_no_device: "Nenhum dispositivo de hotkey ASUS encontrado; atalho FN+F desativado."
 error_typing_no_keyboard: "Nenhum teclado encontrado; desativar a entrada ao digitar não está disponível."
+# fn_osd & listener
+fn_osd_switch_title: "Ativar OSD do Bloqueio Fn"
+fn_osd_switch_subtitle: "Exibe uma sobreposição na tela quando a tecla Fn-Lock é pressionada"
+fn_osd_invert_title: "Calibrar / Inverter OSD"
+fn_osd_invert_subtitle: "Clique para inverter o estado caso Multimídia e F1-F12 estejam invertidos"
+fn_osd_invert_btn_tooltip: "Alternar estado inicial"
+fn_osd_fkeys_label: "Bloqueio Fn: Padrão F1–F12"
+fn_osd_media_label: "Bloqueio Fn: Multimídia / Atalhos"

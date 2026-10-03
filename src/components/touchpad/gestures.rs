@@ -136,7 +136,8 @@ impl Component for GesturesModel {
             shutdown
                 .register(async move {
                     let ok = crate::services::commands::which_exists("brightnessctl").await;
-                    out.send(GesturesCommandOutput::BrightnessctlChecked(ok)).ok();
+                    out.send(GesturesCommandOutput::BrightnessctlChecked(ok))
+                        .ok();
                 })
                 .drop_on_shutdown()
         });

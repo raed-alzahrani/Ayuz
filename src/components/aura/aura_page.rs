@@ -178,12 +178,7 @@ impl Component for AuraPageModel {
         }
     }
 
-    fn update_cmd(
-        &mut self,
-        msg: AuraPageCmd,
-        sender: ComponentSender<Self>,
-        _root: &Self::Root,
-    ) {
+    fn update_cmd(&mut self, msg: AuraPageCmd, sender: ComponentSender<Self>, _root: &Self::Root) {
         match msg {
             AuraPageCmd::Discovered {
                 daemon_running,
@@ -198,9 +193,7 @@ impl Component for AuraPageModel {
                 for info in devices {
                     let label = format_device_subtitle(&info);
                     let kind = info.kind;
-                    let ctrl = AuraDeviceModel::builder()
-                        .launch(info)
-                        .detach();
+                    let ctrl = AuraDeviceModel::builder().launch(info).detach();
                     let widget = ctrl.widget();
                     widget.set_description(Some(&label));
                     self.container.append(widget);
@@ -225,4 +218,3 @@ fn format_device_subtitle(info: &AuraDeviceInfo) -> String {
         _ => suffix.to_string(),
     }
 }
-

@@ -70,9 +70,7 @@ fn legacy_config_dir() -> Option<PathBuf> {
 
 /// Returns true if the legacy `~/.config/asus-hub/` directory exists.
 pub fn legacy_dir_exists() -> bool {
-    legacy_config_dir()
-        .map(|p| p.exists())
-        .unwrap_or(false)
+    legacy_config_dir().map(|p| p.exists()).unwrap_or(false)
 }
 
 /// Returns true if a legacy asus-hub config directory exists and the user

@@ -85,10 +85,10 @@ impl Component for ColorGamutModel {
 
             add = &adw::ComboRow {
                 set_title: &t!("color_gamut_title"),
-                
+
                 #[watch]
                 set_sensitive: model.kde_available,
-                
+
                 #[watch]
                 set_subtitle: &model.color_gamut_description(),
                 set_model: Some(&gamut_list),

@@ -165,7 +165,10 @@ fn parse_i2c_bus(sysfs: &str) -> Option<u32> {
     // Walk segments separated by `/` and pick the last `i2c-<digits>` one.
     sysfs
         .split('/')
-        .filter_map(|seg| seg.strip_prefix("i2c-").and_then(|rest| rest.parse::<u32>().ok()))
+        .filter_map(|seg| {
+            seg.strip_prefix("i2c-")
+                .and_then(|rest| rest.parse::<u32>().ok())
+        })
         .next_back()
 }
 
@@ -302,7 +305,11 @@ enum Touch {
     /// No finger on the pad.
     None,
     /// Single finger resting on `cell`, so far without moving.
-    Key { cell: usize, start_x: i32, start_y: i32 },
+    Key {
+        cell: usize,
+        start_x: i32,
+        start_y: i32,
+    },
     /// Committed to pointing: frames go through to the virtual touchpad.
     Pointer,
 }
@@ -613,7 +620,11 @@ fn reconcile_grab(
     if desired == *grabbed {
         return;
     }
-    let result = if desired { device.grab() } else { device.ungrab() };
+    let result = if desired {
+        device.grab()
+    } else {
+        device.ungrab()
+    };
     if let Err(e) = result {
         tracing::warn!("NumberPad: evdev grab({}) failed: {}", desired, e);
     }

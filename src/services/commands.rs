@@ -67,9 +67,7 @@ pub(crate) async fn pkexec_read_file(path: &'static str) -> Result<String, Strin
             code = out.status.code().unwrap_or(-1).to_string()
         )
         .to_string()),
-        Ok(Err(e)) => {
-            Err(t!("error_cmd_start", cmd = "pkexec", error = e.to_string()).to_string())
-        }
+        Ok(Err(e)) => Err(t!("error_cmd_start", cmd = "pkexec", error = e.to_string()).to_string()),
         Err(e) => Err(t!("error_spawn_blocking", error = e.to_string()).to_string()),
     }
 }
@@ -78,7 +76,10 @@ pub(crate) async fn pkexec_read_file(path: &'static str) -> Result<String, Strin
 ///
 /// Both `path` and `value` are `&'static str` to prevent dynamic injection.
 /// Returns `Err` on spawn failure, non-zero exit code, or task panic.
-pub(crate) async fn pkexec_write_sysfs(path: &'static str, value: &'static str) -> Result<(), String> {
+pub(crate) async fn pkexec_write_sysfs(
+    path: &'static str,
+    value: &'static str,
+) -> Result<(), String> {
     let result = tokio::task::spawn_blocking(move || {
         use std::io::Write;
         let mut child = std::process::Command::new("pkexec")
@@ -101,9 +102,7 @@ pub(crate) async fn pkexec_write_sysfs(path: &'static str, value: &'static str) 
             code = status.code().unwrap_or(-1).to_string()
         )
         .to_string()),
-        Ok(Err(e)) => {
-            Err(t!("error_cmd_start", cmd = "pkexec", error = e.to_string()).to_string())
-        }
+        Ok(Err(e)) => Err(t!("error_cmd_start", cmd = "pkexec", error = e.to_string()).to_string()),
         Err(e) => Err(t!("error_spawn_blocking", error = e.to_string()).to_string()),
     }
 }
